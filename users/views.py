@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 # Create your views here.
@@ -20,11 +21,20 @@ def login_view(request):
         else:
             return render(request,"users/login.html",{
                 "message":"Invalid credentials."
-            })
-    
+            })    
     return render(request,"users/login.html")
+
 def logout_view(request):
     logout(request)
     return render(request,"users/login.html",{
         "message":"Logged Out."
+    })
+
+def register_view(request):
+    form=UserCreationForm(request.POST or None)
+    if form.is_valid():
+        user_obj=form.save()
+        return HttpResponseRedirect(reverse('login'))
+    return render(request,"users/register.html",{
+        "form":form
     })
